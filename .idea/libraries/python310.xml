@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="python310">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/venv/Scripts/python310.zip!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
