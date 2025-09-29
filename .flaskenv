@@ -1,0 +1,8 @@
+FLASK_APP=app.py
+FLASK_ENV=development
+DEBUG=True
+HOST=0.0.0.0
+PORT=5000
+LOG_LEVEL=DEBUG
+SQLALCHEMY_DATABASE_URI=sqlite:///Database.db
+BENCHMARK_RECORD_TABLE=BenchmarkRecord
