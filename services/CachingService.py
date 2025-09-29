@@ -2,6 +2,7 @@ import logging
 
 import pandas as pd
 from sqlalchemy import create_engine
+from sqlalchemy.dialects.sqlite import insert
 from sqlalchemy.orm import sessionmaker
 
 from config import Config
@@ -64,18 +65,18 @@ class CachingService:
 				if not fetched_df.empty:
 					self.logger.debug(f"Cleaning fetched data ...")
 					self.logger.debug(f"Fetched data sample: {fetched_df.head()}")
-					# fetched_df = fetched_df.reset_index()
-					# fetched_df['date'] = pd.to_datetime(fetched_df['date']).dt.strftime('%Y-%m-%d')
-					# fetched_df['ticker'] = benchmark
-					#
-					# all_dates = pd.DataFrame({
-					# 	'date': pd.date_range(start=dates[0], end=dates[-1]).strftime('%Y-%m-%d')
-					# })
-					# fetched_df = pd.merge(all_dates, fetched_df, on='date', how='left')
-					# fetched_df['close_value'] = fetched_df['close_value'].ffill()
-					# fetched_df['ticker'] = fetched_df['ticker'].fillna(benchmark)
-					# fetched_df = fetched_df.dropna(subset=['close_value'])
-					# fetched_df['id'] = fetched_df.apply(lambda row: BenchmarkRecord.generate_key(row['ticker'], row['date']), axis=1)
+					fetched_df = fetched_df.reset_index()
+					fetched_df['date'] = pd.to_datetime(fetched_df['date']).dt.strftime('%Y-%m-%d')
+					fetched_df['ticker'] = benchmark
+
+					all_dates = pd.DataFrame({
+						'date': pd.date_range(start=dates[0], end=dates[-1]).strftime('%Y-%m-%d')
+					})
+					fetched_df = pd.merge(all_dates, fetched_df, on='date', how='left')
+					fetched_df['close_value'] = fetched_df['close_value'].ffill()
+					fetched_df['ticker'] = fetched_df['ticker'].fillna(benchmark)
+					fetched_df = fetched_df.dropna(subset=['close_value'])
+					fetched_df['id'] = fetched_df.apply(lambda row: BenchmarkRecord.generate_key(row['ticker'], row['date']), axis=1)
 
 					min_date = fetched_df['date'].min()
 					max_date = fetched_df['date'].max()
@@ -94,20 +95,43 @@ class CachingService:
 
 					self.logger.debug(f"Saving fetched data to database ...")
 					# self.logger.debug(fetched_df.to_string())
-					fetched_df[['id', 'ticker', 'date', 'close_value']].to_sql(
-						Config.BENCHMARK_RECORD_TABLE,
-						self.engine,
-						if_exists='replace',
-						index=False,
-						method='multi',
-						chunksize=1000
-					)
+					# fetched_df[['id', 'ticker', 'date', 'close_value']].to_sql(
+					# 	Config.BENCHMARK_RECORD_TABLE,
+					# 	self.engine,
+					# 	if_exists='append',
+					# 	index=False,
+					# 	method='multi',
+					# 	chunksize=1000
+					# )
+
+					# Convert to list of dictionaries for SQLAlchemy
+					records_to_upsert = [
+						{
+							'id': row['id'],
+							'ticker': row['ticker'],
+							'date': row['date'],
+							'close_value': row['close_value']
+						}
+						for _, row in fetched_df.iterrows()
+					]
+
+					# Use merge to handle updates/inserts
+					for record in records_to_upsert:
+						stmt = insert(BenchmarkRecord).values(record)
+						stmt = stmt.on_conflict_do_update(
+							index_elements=['id'],
+							set_={
+								'close_value': stmt.excluded.close_value,
+								'date': stmt.excluded.date
+							}
+						)
+						session.execute(stmt)
 					session.commit()
 					self.logger.debug("Successfully saved fetched data to database")
 
-			self.logger.debug(f"Fetching from database latest values for{benchmark}")
+			self.logger.debug(f"Fetching from database latest values for {benchmark}")
 
-			ids = (f"{benchmark}#{date}" for date in dates)
+			ids = [f"{benchmark}#{date}" for date in dates]
 
 			records = session.query(BenchmarkRecord).filter(BenchmarkRecord.id.in_(ids)).order_by(BenchmarkRecord.date).all()
 			return [float(record.close_value) for record in records]

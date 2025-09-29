@@ -19,9 +19,10 @@ class CalculationService:
         benchmark_values = self.caching_service.batch_get_ticker_value(benchmark.value, dates)
 
         units = 0
+        self.logger.info(f"len of cashflows: {len(cashflows)} & len of benchmark_values: {len(benchmark_values)} & len of dates: {len(dates)}")
         for i in range(len(cashflows)):
             units += (-cashflows[i])/benchmark_values[i]
             self.logger.info(f"unit: {units}, cashflow: {cashflows[i]}, benchmark_value: {benchmark_values[i]}")
-        res = units*benchmark_values[-1]
+        res = units*benchmark_values[len(dates)-1]
         self.logger.info(f"Final Benchmark Portfolio value for {benchmark.name}: {res}")
         return res

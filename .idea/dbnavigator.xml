@@ -27,8 +27,11 @@
   </component>
   <component name="DBNavigator.Project.DatabaseConsoleManager">
     <connection id="a0386420-ffaf-44cc-95b8-8132f7ee931b">
-      <console name="Connection" type="STANDARD" schema="main" session="Main"><![CDATA[DROP TABLE IF EXISTS BenchmarkRecord;
-DROP TABLE IF EXISTS CacheRange;]]></console>
+      <console name="Connection" type="STANDARD" schema="main" session="Main"><![CDATA[SELECT * FROM BenchmarkRecord;
+SELECT * FROM CacheRange;
+DELETE FROM BenchmarkRecord;
+DELETE FROM CacheRange;
+COMMIT]]></console>
     </connection>
   </component>
   <component name="DBNavigator.Project.DatabaseEditorStateManager">
@@ -44,20 +47,17 @@ DROP TABLE IF EXISTS CacheRange;]]></console>
   </component>
   <component name="DBNavigator.Project.DatasetFilterManager">
     <filter-actions connection-id="a0386420-ffaf-44cc-95b8-8132f7ee931b" dataset="Database.CacheRange" active-filter-id="EMPTY_FILTER" />
-    <filter-actions connection-id="a0386420-ffaf-44cc-95b8-8132f7ee931b" dataset="Database.BenchmarkRecord" active-filter-id="">
+    <filter-actions connection-id="a0386420-ffaf-44cc-95b8-8132f7ee931b" dataset="Database.BenchmarkRecord" active-filter-id="EMPTY_FILTER">
       <filter id="0bcdca94-d52d-49ec-b706-d6bb48b3d471" name="2030" temporary="false" custom-name="false" type="basic" join-type="AND">
         <condition column="close_value" operator="=" value="2030" active="true" />
       </filter>
       <filter id="a6c780dc-1798-481a-956e-c13bfb1ac0c5" name="Max Date" temporary="false" custom-name="false" type="custom">
-        <condition>&lt;br&gt;column_name = (SELECT MAX(date) FROM BenchmarkRecord);</condition>
+        <condition><![CDATA[<br>column_name = (SELECT MAX(date) FROM BenchmarkRecord);]]></condition>
       </filter>
     </filter-actions>
   </component>
   <component name="DBNavigator.Project.ExecutionManager">
     <retain-sticky-names value="false" />
-  </component>
-  <component name="DBNavigator.Project.FileConnectionMappingManager">
-    <mapping file-url="file://$PROJECT_DIR$/Database.db" connection-id="virtual-sqlite-connection" session-id="MAIN" current-schema="" />
   </component>
   <component name="DBNavigator.Project.ObjectQuickFilterManager">
     <last-used-operator value="EQUAL" />
