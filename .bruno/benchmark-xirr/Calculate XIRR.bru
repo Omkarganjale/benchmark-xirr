@@ -1,0 +1,27 @@
+meta {
+  name: Calculate XIRR
+  type: http
+  seq: 2
+}
+
+post {
+  url: http://localhost:5000/api/calculate
+  body: json
+  auth: inherit
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "dates": ["2023--22", "2025-09-24", "2025-09-26"],
+    "cashflows": [-10000, -10000, 150000],
+    "benchmarks": ["NIFTY50"]
+  }
+}
+
+settings {
+  encodeUrl: true
+}
