@@ -18,3 +18,10 @@ class CacheRange(BaseModel):
 
 	def __str__(self):
 		return f"<CacheRange(ticker='{self.ticker}', min_date='{self.min_date}', max_date='{self.max_date}')>"
+
+	def serialize(self):
+		return {
+			'ticker': self.ticker,
+			'min_date': self.min_date,
+			'max_date': self.max_date
+		}

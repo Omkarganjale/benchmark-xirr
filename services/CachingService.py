@@ -6,6 +6,7 @@ from sqlalchemy.dialects.sqlite import insert
 from sqlalchemy.orm import sessionmaker
 
 from config import Config
+from enums.BenchmarkTicker import BenchmarkTicker
 from models.BaseModel import BaseModel
 from models.BenchmarkRecord import BenchmarkRecord
 from models.CacheRange import CacheRange
@@ -65,18 +66,6 @@ class CachingService:
 				if not fetched_df.empty:
 					self.logger.debug(f"Cleaning fetched data ...")
 					self.logger.debug(f"Fetched data sample: {fetched_df.head()}")
-					fetched_df = fetched_df.reset_index()
-					fetched_df['date'] = pd.to_datetime(fetched_df['date']).dt.strftime('%Y-%m-%d')
-					fetched_df['ticker'] = benchmark
-
-					all_dates = pd.DataFrame({
-						'date': pd.date_range(start=dates[0], end=dates[-1]).strftime('%Y-%m-%d')
-					})
-					fetched_df = pd.merge(all_dates, fetched_df, on='date', how='left')
-					fetched_df['close_value'] = fetched_df['close_value'].ffill()
-					fetched_df['ticker'] = fetched_df['ticker'].fillna(benchmark)
-					fetched_df = fetched_df.dropna(subset=['close_value'])
-					fetched_df['id'] = fetched_df.apply(lambda row: BenchmarkRecord.generate_key(row['ticker'], row['date']), axis=1)
 
 					min_date = fetched_df['date'].min()
 					max_date = fetched_df['date'].max()
@@ -94,15 +83,6 @@ class CachingService:
 					session.add(cache_range)
 
 					self.logger.debug(f"Saving fetched data to database ...")
-					# self.logger.debug(fetched_df.to_string())
-					# fetched_df[['id', 'ticker', 'date', 'close_value']].to_sql(
-					# 	Config.BENCHMARK_RECORD_TABLE,
-					# 	self.engine,
-					# 	if_exists='append',
-					# 	index=False,
-					# 	method='multi',
-					# 	chunksize=1000
-					# )
 
 					# Convert to list of dictionaries for SQLAlchemy
 					records_to_upsert = [
@@ -139,6 +119,22 @@ class CachingService:
 		except Exception as e:
 			self.logger.error(f"Error in batch_get_ticker_value: {str(e)}")
 			session.rollback()
+			raise e
+		finally:
+			session.close()
+
+	def get_data_specs(self):
+		session = self.Session()
+		try:
+			cached_range = {}
+			for benchmark in BenchmarkTicker:
+				self.logger.debug(f"Fetching cache range for {benchmark.value}")
+				record = session.query(CacheRange).filter_by(ticker=benchmark.value).first()
+				if record is not None:
+					cached_range[benchmark.name] = record.serialize()
+			return cached_range
+		except Exception as e:
+			self.logger.error(f"Error in get_data_specs: {str(e)}")
 			raise e
 		finally:
 			session.close()

@@ -30,17 +30,17 @@ class FinancialDataService:
 		result['ticker'] = ticker
 		result = result.rename(columns={'Close': 'close_value', 'Date': 'date'})
 
-		# result = result.reset_index()
-		# result['date'] = pd.to_datetime(result['date']).dt.strftime('%Y-%m-%d')
-		# result['ticker'] = ticker
-		#
-		# all_dates = pd.DataFrame({
-		# 	'date': pd.date_range(start=start_date, end=end_date).strftime('%Y-%m-%d')
-		# })
-		# result = pd.merge(all_dates, result, on='date', how='left')
-		# result['close_value'] = result['close_value'].ffill()
-		# result['ticker'] = result['ticker'].fillna(ticker)
-		# result = result.dropna(subset=['close_value'])
-		# result['id'] = result.apply(lambda row: BenchmarkRecord.generate_key(row['ticker'], row['date']), axis=1)
+		result = result.reset_index()
+		result['date'] = pd.to_datetime(result['date']).dt.strftime('%Y-%m-%d')
+		result['ticker'] = ticker
+
+		all_dates = pd.DataFrame({
+			'date': pd.date_range(start=start_date, end=end_date).strftime('%Y-%m-%d')
+		})
+		result = pd.merge(all_dates, result, on='date', how='left')
+		result['close_value'] = result['close_value'].ffill()
+		result['ticker'] = result['ticker'].fillna(ticker)
+		result = result.dropna(subset=['close_value'])
+		result['id'] = result.apply(lambda row: BenchmarkRecord.generate_key(row['ticker'], row['date']), axis=1)
 
 		return result
