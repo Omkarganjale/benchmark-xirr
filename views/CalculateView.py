@@ -23,18 +23,26 @@ class CalculateView(MethodView):
 			payload = request.get_json()
 			self.validator.validate_xirr_calculation_request(payload)
 
-			xirr = {'portfolio': self.calculator.calculate_xirr(payload['cashflows'], payload['dates'])}
+			response_body = {
+				'portfolio': {
+					'xirr': self.calculator.calculate_xirr(payload['cashflows'], payload['dates'])
+				},
+				'benchmarks': {}
+			}
 			for benchmark in payload['benchmarks']:
 				benchmark_portfolio_value = self.calculator.calculate_benchmark_portfolio_value(
 					BenchmarkTicker[benchmark],
 					payload['dates'],
 					payload['cashflows'][:-1])
 
-				xirr[benchmark] = self.calculator.calculate_xirr(
-					payload['cashflows'][:-1] + [benchmark_portfolio_value],
-					payload['dates'])
+				response_body['benchmarks'][benchmark] = {
+					'absoluteReturns': benchmark_portfolio_value,
+					'xirr': self.calculator.calculate_xirr(
+						payload['cashflows'][:-1] + [benchmark_portfolio_value],
+						payload['dates'])
+				}
 
-			return generate_response(ResponseStatus.SUCCESS, xirr, 200)
+			return generate_response(ResponseStatus.SUCCESS, response_body, 200)
 
 		except ValidationError as e:
 			self.logger.error(f"Validation Error in Xirr Calculation Request: {e.messages}")
@@ -43,4 +51,3 @@ class CalculateView(MethodView):
 		except Exception as e:
 			self.logger.error(f"Error Occurred while Xirr Calculation: {str(e)}")
 			return generate_response(ResponseStatus.ERROR, e, 500)
-

@@ -3,7 +3,6 @@ from flask.views import MethodView
 
 
 class HealthCheckView(MethodView):
-    """API Health Check"""
     def get(self):
         return jsonify({
             'status': 'success',
