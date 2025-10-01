@@ -12,6 +12,11 @@ class ApiStateView(MethodView):
 		self.caching_service = CachingService(self.logger)
 
 	def get(self):
-		self.logger.info("API Cached data state requested")
-		cached_ranges = self.caching_service.get_data_specs()
-		return generate_response(ResponseStatus.SUCCESS, cached_ranges, 200)
+		try:
+			self.logger.info("API Cached data state requested")
+			cached_ranges = self.caching_service.get_data_specs()
+			return generate_response(ResponseStatus.SUCCESS, cached_ranges, 200)
+
+		except Exception as e:
+			self.logger.error(f"Error Occurred while Xirr Calculation: {str(e)}")
+			return generate_response(ResponseStatus.ERROR, e, 500)
