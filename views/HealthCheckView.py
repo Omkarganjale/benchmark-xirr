@@ -1,11 +1,11 @@
 from flask import jsonify
 from flask.views import MethodView
 
+from config import Config
+from enums.ResponseStatus import ResponseStatus
+from util.ResponseUtil import generate_response
+
 
 class HealthCheckView(MethodView):
     def get(self):
-        return jsonify({
-            'status': 'success',
-            'message': 'API is running',
-            'version': '1.0.0'
-        }), 200
+        return generate_response(ResponseStatus.SUCCESS, f"API version {Config.API_VERSION} is running", 200)

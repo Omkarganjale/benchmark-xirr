@@ -18,6 +18,23 @@ class CalculateView(MethodView):
 		self.calculator = CalculationService(logger)
 		self.data_service = FinancialDataService(logger)
 
+	"""
+	Calculate Annualized XIRR for given cashflows and dates mimics the same dates.
+	If provided with benchmarks mimics the cashflow on index and calculates Absolute return and xirr.
+	Assumptions & Validations:
+	- Index close value is considered for given date (if holiday, previous working day's close value is considered)
+	- Cashflows are in the same order as dates
+	- Last Cashflow is the final portfolio value
+	- Dates are sorted and unequal
+
+	POST - /api/calculate
+	Request Body:
+	{
+		"cashflows": [1000, 2000, 3000],
+		"dates": ["2022-01-01", "2022-02-01", "2022-03-01"],
+		"benchmarks": ["NIFTY", "NIFTY50"]
+	}
+	"""
 	def post(self):
 		try:
 			payload = request.get_json()

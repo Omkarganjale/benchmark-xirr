@@ -15,5 +15,5 @@ class Config:
     BENCHMARK_RECORD_TABLE = os.getenv('BENCHMARK_RECORD_TABLE', 'BenchmarkRecord')
     CACHE_RANGE_TABLE = os.getenv('CACHE_RANGE_TABLE', 'CacheRange')
     SQLALCHEMY_DATABASE_URI = os.getenv('SQLALCHEMY_DATABASE_URI', 'sqlite:///Database.db')
-
+    API_VERSION = "1.0.0"
     DATE_FORMAT = '%Y-%m-%d'

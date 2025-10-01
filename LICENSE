@@ -1,21 +1,39 @@
-MIT License
+Custom GPL-NC License (Based on GNU GPL v3, Non-Commercial Adaptation)
 
-Copyright (c) 2025 Omkar Ganjale
+Copyright (C) 2025  Omkar Ganjale
 
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
+This program is free software: you can redistribute it and/or modify
+it under the terms of this License as published by the author.
+It is based on the GNU General Public License version 3 (GPLv3), with
+the following additional restriction:
 
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
+    * The Software may not be sold, sublicensed for profit, or used in
+      any commercial product or service without prior written permission
+      from the copyright holder.
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
+Permission is hereby granted to any person obtaining a copy of this
+software and associated documentation files (the "Software"), to use,
+copy, study, and modify the Software for personal, academic, or research
+purposes free of charge, subject to the following conditions:
+
+    1. Redistributions of source code must retain the above copyright
+       notice, this license text, and the disclaimer below.
+
+    2. Redistributions in binary form must reproduce the above copyright
+       notice, this license text, and the disclaimer in the documentation
+       and/or other materials provided with the distribution.
+
+    3. Any modifications, derivative works, or redistributions must also
+       remain under this same License.
+
+Disclaimer:
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
+OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
+DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+DEALINGS IN THE SOFTWARE.
+
+For full details of the original GNU GPL v3 terms, see:
+<https://www.gnu.org/licenses/gpl-3.0.txt>
