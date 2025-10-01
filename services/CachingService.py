@@ -1,4 +1,5 @@
 import logging
+from sqlite3 import DatabaseError
 
 import pandas as pd
 from sqlalchemy import create_engine
@@ -119,7 +120,7 @@ class CachingService:
 		except Exception as e:
 			self.logger.error(f"Error in batch_get_ticker_value: {str(e)}")
 			session.rollback()
-			raise e
+			raise DatabaseError(f"Error in batch_get_ticker_value: {str(e)}")
 		finally:
 			session.close()
 
@@ -135,6 +136,6 @@ class CachingService:
 			return cached_range
 		except Exception as e:
 			self.logger.error(f"Error in get_data_specs: {str(e)}")
-			raise e
+			raise DatabaseError(f"Error in get_data_specs: {str(e)}")
 		finally:
 			session.close()

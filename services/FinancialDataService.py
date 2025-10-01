@@ -19,6 +19,7 @@ class FinancialDataService:
 
 		except Exception as e:
 			self.logger.error(f"Error occurred while fetching financial data: {str(e)}")
+			raise ValueError(f"Error occurred while fetching financial data: {str(e)}")
 
 	@staticmethod
 	def clean_data(ticker: str, data: pd.DataFrame, start_date, end_date):
