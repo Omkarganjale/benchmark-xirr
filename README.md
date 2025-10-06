@@ -185,10 +185,6 @@ API tests are available in the `.bruno` directory and can be run using [Bruno](h
 4. Push to the branch (`git push origin feature/AmazingFeature`)
 5. Open a Pull Request
 
-## License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
 ## Acknowledgments
 
 - [Flask](https://flask.palletsprojects.com/) - The web framework used
