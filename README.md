@@ -1,137 +1,197 @@
-# benchmark-xirr
-Get XIRR for investments and compare it with a benchmark
+# XIRR Benchmarking API
 
-TODO:
-* Backend:
-    * SIP
-    * Add Benchmark tickers: S&P500, NASDAQ100, INRUSD, LargeCapMidCap, Commodity(Gold, Silver, Crude Oil in INR)
+A RESTful API for calculating Extended Internal Rate of Return (XIRR) for investment portfolios with benchmark comparison capabilities. This service allows users to calculate the annualized return of their investments and compare them against standard market benchmarks like NIFTY 50.
 
-* Frontend:
-    * XIRR basics
-    * Sorted on dates
-    * Last cashflow value is positive and current portfolio value
-    * In case future date, benchmark xirr is not possible
-    * Yahoo Finance notice
-    * Investment Disclaimer
-    * FAQs
+## Features
 
+- Calculate XIRR for custom cash flows and dates
+- Compare portfolio performance against market benchmarks
+- Support for multiple benchmark indices (NIFTY, NIFTY50, etc.)
+- Absolute return calculation for benchmarks
+- Caching mechanism for improved performance
+- Comprehensive error handling and input validation
+- RESTful API with JSON responses
+- Detailed logging
 
----
+## Tech Stack
 
-Low level frontend sketch
+- **Backend Framework**: Flask (Python)
+- **Database**: SQLite (with SQLAlchemy ORM)
+- **Financial Calculations**: pyxirr
+- **Market Data**: yfinance (Yahoo Finance API)
+- **Data Validation**: Marshmallow
+- **Logging**: Python logging module
+- **Environment Management**: python-dotenv
 
----
- 
----------------------------------------------------------------
-                     XIRR Calculator                          
-"Understand your portfolio's true returns and see            
-how it compares with benchmarks like NIFTY 50,             
-Sensex, and more."
- 
----------------------------------------------------------------
-               CONDITIONAL INPUT SECTION                     
----------------------------------------------------------------
-[✓] Calculate for SIP? then following fields appear
+## Prerequisites
 
-If clicked → dropdown form:
-- Start Date of SIP: [ DD-MM-YYYY ]
-- Investment Type: ( Monthly ☐ / Quarterly ☐ / Yearly ☐ )
-- Date of Month: [ 1-28 ] (default = DD from start)
-- Step Up: [   ] %  (0–100, monthly/yearly/quarterly)
+- Python 3.8+
+- pip (Python package manager)
 
----------------------------------------------------------------
-                  TRANSACTIONS TABLE                         
----------------------------------------------------------------
-Date        | Type (toggle)       | Amount                     
------------- |--------------------|----------------------------
-01-01-2024  | [Invested/Red]     | [1000.00]                  
-01-02-2024  | [Redeemed/Green]   | [2000.00]                  
-...         | ...                | ...                         
-[+ Add Row]
- 
----------------------------------------------------------------
-                  BENCHMARK SELECTION                        
----------------------------------------------------------------
-"Select benchmarks to compare with:"                        
-[☐ Nifty50]  [☐ Sensex]  [☐ SmallCap]  [☐ Gold]
- 
----------------------------------------------------------------
-                  SUBMIT + LOADER                             
----------------------------------------------------------------
-[ SUBMIT ]
+## Installation
 
-(Loader animation...)                                        
-"Patience is the key to successful investing."
- 
----------------------------------------------------------------
-                     RESULTS SECTION                          
----------------------------------------------------------------
-Results:
-1. Linear Gauge: multi-colored markers on color gradient RG line
+1. Clone the repository:
+   ```bash
+   git clone <repository-url>
+   cd benchmark-xirr
+   ```
 
-Linear Gauge (XIRR %)                                       
--40%    -20%      0%      20%      40%                        
-|---------|---------|---------|---------|                   
-    ● Nifty50                                         
-              ● Sensex                                    
-                        ● SmallCap                                            
-          ● Gold                                  
-                            ▲ Your Portfolio
+2. Create and activate a virtual environment (recommended):
+   ```bash
+   python -m venv venv
+   source venv/bin/activate  # On Windows: venv\Scripts\activate
+   ```
 
-2. Bullet chart on returns 
+3. Install dependencies:
+   ```bash
+   pip install -r requirements.txt
+   ```
 
-\---
-|  |
-|__|  Your Portfolio
-|  |
-|__|  Nifty50
-|__|  Nifty100
-|  |
-|--|  Gold
+## Configuration
 
-Cards:                                                       
-[ Total Invested ]
-- Amount: 50,000
-- Period: Jan 2024 – Sep 2025
+1. Copy the `.env.example` file to `.env` and modify as needed:
+   ```bash
+   cp .env.example .env
+   ```
 
-[ Your Portfolio XIRR ]
-- Total Returns: 12,000
-- XIRR: 15%
+2. Environment variables:
+   ```
+   DEBUG=True
+   HOST=0.0.0.0
+   PORT=5000
+   LOG_LEVEL=INFO
+   SQLALCHEMY_DATABASE_URI=sqlite:///Database.db
+   ```
 
-[ Nifty50 XIRR ]
-- Total Returns: 11,500
-- XIRR: 14%
+## Running the Application
 
-[ Sensex XIRR ]
-- Total Returns: 11,800
-- XIRR: 14.2%
+1. Start the Flask development server:
+   ```bash
+   python app.py
+   ```
 
-[ SmallCap XIRR ]
-- Total Returns: 13,000
-- XIRR: 16%
+2. The API will be available at `http://localhost:5000`
 
-[ Gold XIRR ]
-- Total Returns: 10,500
-- XIRR: 12%
+## API Endpoints
 
----------------------------------------------------------------
-                           FAQS                                
----------------------------------------------------------------
-[ Q: What is XIRR? ]  (click to expand)                     
-A: XIRR is the extended internal rate of return, which calculates returns considering exact dates of cashflows.
+### 1. Calculate XIRR
 
-[ Q: How is it different from CAGR? ]  (click to expand)    
-A: CAGR assumes uniform investment growth over time, while XIRR accounts for irregular cashflows and timings.
+Calculate XIRR for given cash flows and compare with benchmarks.
 
-[ Q: Can I compare multiple benchmarks? ]  (click to expand)
-A: Yes, you can select multiple benchmarks like Nifty50, Sensex, SmallCap, and Gold to compare against your portfolio.
+- **Endpoint**: `POST /api/calculate`
+- **Request Body**:
+  ```json
+  {
+    "cashflows": [1000, 2000, 3000],
+    "dates": ["2022-01-01", "2022-02-01", "2022-03-01"],
+    "benchmarks": ["NIFTY", "NIFTY50"]
+  }
+  ```
+  
+  - `cashflows`: List of cash flows (positive for investments, negative for withdrawals)
+  - `dates`: List of corresponding dates in YYYY-MM-DD format
+  - `benchmarks`: List of benchmark indices to compare against (optional)
 
-[ Q: How often should I update transactions? ]  (click to expand)
-A: Update transactions whenever you invest or redeem to get accurate XIRR calculations.
- 
----------------------------------------------------------------
-                           FOOTER                               
----------------------------------------------------------------
-Made with ♥ by Omkar                                          
-[ GitHub Link ]  [ Developer Profile Link ]                  
- 
+- **Success Response (200 OK)**:
+  ```json
+  {
+    "status": "success",
+    "data": {
+      "portfolio": {
+        "xirr": 12.34
+      },
+      "benchmarks": {
+        "NIFTY": {
+          "absoluteReturns": 3150.50,
+          "xirr": 10.25
+        },
+        "NIFTY50": {
+          "absoluteReturns": 3200.75,
+          "xirr": 10.50
+        }
+      }
+    }
+  }
+  ```
+
+### 2. Health Check
+
+Check if the API is running.
+
+- **Endpoint**: `GET /api/health`
+- **Success Response (200 OK)**:
+  ```json
+  {
+    "status": "success",
+    "data": {
+      "status": "healthy",
+      "version": "1.0.0"
+    }
+  }
+  ```
+
+## Project Structure
+
+```
+benchmark-xirr/
+├── .bruno/                  # API testing collections
+├── enums/                   # Enumerations
+│   ├── BenchmarkTicker.py   # Supported benchmark tickers
+│   └── ResponseStatus.py    # API response statuses
+├── models/                  # Database models
+│   ├── BaseModel.py         # Base model class
+│   ├── BenchmarkRecord.py   # Benchmark data model
+│   └── CacheRange.py        # Caching model
+├── schemas/                 # Data validation schemas
+│   └── XirrCalculationRequestSchema.py
+├── services/                # Business logic
+│   ├── CachingService.py    # Caching service
+│   ├── CalculationService.py# XIRR calculation logic
+│   ├── FinancialDataService.py # Market data service
+│   └── ValidationService.py # Input validation
+├── util/                    # Utility functions
+│   └── ResponseUtil.py      # API response formatter
+├── views/                   # API endpoints
+│   ├── ApiStateView.py      # API state management
+│   ├── CalculateView.py     # XIRR calculation endpoint
+│   └── HealthCheckView.py   # Health check endpoint
+├── .env.example             # Example environment variables
+├── .flaskenv                # Flask environment variables
+├── app.py                   # Application entry point
+├── config.py                # Configuration settings
+└── requirements.txt         # Python dependencies
+```
+
+## Error Handling
+
+The API returns appropriate HTTP status codes and error messages in the following format:
+
+```json
+{
+  "status": "error",
+  "message": "Detailed error message"
+}
+```
+
+## Testing
+
+API tests are available in the `.bruno` directory and can be run using [Bruno](https://www.usebruno.com/).
+
+## Contributing
+
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## Acknowledgments
+
+- [Flask](https://flask.palletsprojects.com/) - The web framework used
+- [pyxirr](https://github.com/apervilon/pyxirr) - XIRR calculation library
+- [yfinance](https://pypi.org/project/yfinance/) - Market data provider
+- [Marshmallow](https://marshmallow.readthedocs.io/) - Data validation and serialization
